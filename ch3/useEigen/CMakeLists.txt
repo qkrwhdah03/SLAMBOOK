@@ -3,6 +3,6 @@ project(useEigen)
 
 set(CMAKE_BUILD_TYPE "Release")
 
-include_directories("../../3rdparty/eigen3")
+include_directories("../../install/eigen3/include/eigen3")
 
 add_executable(eigenMatrix eigenMatrix.cpp)
