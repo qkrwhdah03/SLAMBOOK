@@ -1,14 +1,15 @@
 #include <iostream>
 #include <fstream>
-#include <unistd.h>
 #include <pangolin/pangolin.h>
 #include <sophus/se3.hpp>
+#include <windows.h> // windows.h & Pangolin 
 
-using namespace Sophus;
+
 using namespace std;
+using namespace Sophus;
 
-string groundtruth_file = "./example/groundtruth.txt";
-string estimated_file = "./example/estimated.txt";
+string groundtruth_file = "C:/Users/qkrwh/OneDrive/Desktop/VClab/visual-slam-2024-fall-indi2-code/revision/ch4/example/estimated.txt";
+string estimated_file = "C:/Users/qkrwh/OneDrive/Desktop/VClab/visual-slam-2024-fall-indi2-code/revision/ch4/example/groundtruth.txt";
 
 typedef vector<Sophus::SE3d, Eigen::aligned_allocator<Sophus::SE3d>> TrajectoryType;
 
@@ -96,7 +97,7 @@ void DrawTrajectory(const TrajectoryType &gt, const TrajectoryType &esti) {
       glEnd();
     }
     pangolin::FinishFrame();
-    usleep(5000);   // sleep 5 ms
+    Sleep(50);   // sleep 5 ms
   }
 
 }
