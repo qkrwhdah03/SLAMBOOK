@@ -24,5 +24,5 @@ target_link_libraries(imageBasics ${OpenCV_LIBS})
 
 
 # undistorImage.cpp
-#add_executable(undistortImage undistortImage.cpp)
-#target_link_libraries(undistortImage ${OpenCV_LIBS})
+add_executable(undistortImage undistortImage.cpp)
+target_link_libraries(undistortImage ${OpenCV_LIBS})
