@@ -1,84 +1,96 @@
 #include <iostream>
 #include <fstream>
+#include <string>
 #include <opencv2/opencv.hpp>
-#include <boost/format.hpp>  // for formating strings
 #include <pangolin/pangolin.h>
 #include <sophus/se3.hpp>
-
+#include <windows.h>
 
 using namespace std;
+
 typedef vector<Sophus::SE3d, Eigen::aligned_allocator<Sophus::SE3d>> TrajectoryType;
 typedef Eigen::Matrix<double, 6, 1> Vector6d;
 
-// 在pangolin中画图，已写好，无需调整
-void showPointCloud(
-    const vector<Vector6d, Eigen::aligned_allocator<Vector6d>> &pointcloud);
+void showPointCloud(const vector<Vector6d, Eigen::aligned_allocator<Vector6d>> &pointcloud);
+
+string base_path = "C:/Users/qkrwh/OneDrive/Desktop/VClab/visual-slam-2024-fall-indi2-code/revision/ch5/rgbd/";
+
 
 int main(int argc, char **argv) {
-    vector<cv::Mat> colorImgs, depthImgs;    // 彩色图和深度图
-    TrajectoryType poses;         // 相机位姿
+    vector<cv::Mat> colorImgs, depthImgs; 
+    TrajectoryType poses;
 
-    ifstream fin("./pose.txt");
-    if (!fin) {
-        cerr << "请在有pose.txt的目录下运行此程序" << endl;
+    // Read Data
+
+    string file_path = base_path + "pose.txt";
+    ifstream fin(file_path);
+    if(!fin){
+        cout << "No such file in" << base_path << endl;
         return 1;
     }
 
-    for (int i = 0; i < 5; i++) {
-        boost::format fmt("./%s/%d.%s"); //图像文件格式
-        colorImgs.push_back(cv::imread((fmt % "color" % (i + 1) % "png").str()));
-        depthImgs.push_back(cv::imread((fmt % "depth" % (i + 1) % "pgm").str(), -1)); // 使用-1读取原始图像
+    for(int i=0; i<5; ++i){
+        cv::Mat colorImg = cv::imread(base_path + "color/" + to_string(i) + ".png", cv::IMREAD_COLOR);
+        cv::Mat depthImg = cv::imread(base_path + "depth/" + to_string(i) + ".pgm", cv::IMREAD_UNCHANGED);
 
-        double data[7] = {0};
-        for (auto &d:data)
+        colorImgs.push_back(colorImg.clone());
+        depthImgs.push_back(depthImg.clone());
+
+        double data[7] = {0,};
+
+        for(auto &d : data){
             fin >> d;
-        Sophus::SE3d pose(Eigen::Quaterniond(data[6], data[3], data[4], data[5]),
-                          Eigen::Vector3d(data[0], data[1], data[2]));
+        }
+        Sophus::SE3d pose(Eigen::Quaterniond(data[6], data[3], data[4], data[5]), Eigen::Vector3d(data[0], data[1], data[2]));
         poses.push_back(pose);
     }
 
-    // 计算点云并拼接
-    // 相机内参 
+
+    // Point Cloud 
     double cx = 325.5;
     double cy = 253.5;
     double fx = 518.0;
     double fy = 519.0;
     double depthScale = 1000.0;
+
     vector<Vector6d, Eigen::aligned_allocator<Vector6d>> pointcloud;
     pointcloud.reserve(1000000);
 
-    for (int i = 0; i < 5; i++) {
-        cout << "转换图像中: " << i + 1 << endl;
+    for(int i=0; i<5; ++i){
+        cout << "Transforming Image " << to_string(i+1) << "..." << endl;
         cv::Mat color = colorImgs[i];
         cv::Mat depth = depthImgs[i];
         Sophus::SE3d T = poses[i];
-        for (int v = 0; v < color.rows; v++)
-            for (int u = 0; u < color.cols; u++) {
-                unsigned int d = depth.ptr<unsigned short>(v)[u]; // 深度值
-                if (d == 0) continue; // 为0表示没有测量到
+
+        for(int v=0; v<color.rows; ++v){
+            for(int u=0; u<color.cols; ++u){
+                unsigned int d = depth.ptr<unsigned short>(v)[u];
+                if(d == 0) continue;
+                
                 Eigen::Vector3d point;
                 point[2] = double(d) / depthScale;
                 point[0] = (u - cx) * point[2] / fx;
-                point[1] = (v - cy) * point[2] / fy;
+                point[1] = (v - cy) * point[2] / fy; 
                 Eigen::Vector3d pointWorld = T * point;
 
                 Vector6d p;
-                p.head<3>() = pointWorld;
+                p.head<3>() = pointWorld; 
                 p[5] = color.data[v * color.step + u * color.channels()];   // blue
                 p[4] = color.data[v * color.step + u * color.channels() + 1]; // green
                 p[3] = color.data[v * color.step + u * color.channels() + 2]; // red
                 pointcloud.push_back(p);
             }
+        }
     }
+    cout << "Total " << pointcloud.size() << " number of points exist!" << endl;
 
-    cout << "点云共有" << pointcloud.size() << "个点." << endl;
     showPointCloud(pointcloud);
     return 0;
 }
 
-void showPointCloud(const vector<Vector6d, Eigen::aligned_allocator<Vector6d>> &pointcloud) {
 
-    if (pointcloud.empty()) {
+void showPointCloud(const vector<Vector6d, Eigen::aligned_allocator<Vector6d>> &pointcloud){
+    if(pointcloud.empty()){
         cerr << "Point cloud is empty!" << endl;
         return;
     }
@@ -111,7 +123,7 @@ void showPointCloud(const vector<Vector6d, Eigen::aligned_allocator<Vector6d>> &
         }
         glEnd();
         pangolin::FinishFrame();
-        usleep(5000);   // sleep 5 ms
+        Sleep(50);  
     }
     return;
 }
