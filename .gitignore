@@ -34,7 +34,6 @@
 *cmake-build-*
 *.idea
 **build**
-**install**
 
 *.vscode
 
