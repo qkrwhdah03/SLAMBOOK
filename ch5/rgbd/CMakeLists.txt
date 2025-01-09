@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED on)
 add_executable(joinMap joinMap.cpp)
 
 # Sophus
-set(Sophus_DIR "../../install/Sophus/share/sophus/cmake")
+set(Sophus_DIR "c:/Users/qkrwh/3rdparty/install/Sophus/share/sophus/cmake")
 find_package(Sophus REQUIRED)
 
 if(Sophus_FOUND)
@@ -16,13 +16,13 @@ endif()
 target_link_libraries(joinMap Sophus::Sophus)
 
 # Eigen
-include_directories("../../install/eigen3/include/eigen3")
+include_directories("c:/Users/qkrwh/3rdparty/install/eigen3/include/eigen3")
 
 # Threads 
 find_package(Threads REQUIRED)
 
 # GLEW 
-set(GLEW_DIR "../../install/glew/lib/cmake/glew")
+set(GLEW_DIR "c:/Users/qkrwh/3rdparty/install/glew/lib/cmake/glew")
 find_package(GLEW REQUIRED)
 
 if(GLEW_FOUND)
@@ -34,7 +34,7 @@ include_directories(${GLEW_INCLUDE_DIRS})
 
 
 # Pangolin
-set(Pangolin_DIR "../../install/Pangolin/lib/cmake/Pangolin")
+set(Pangolin_DIR "c:/Users/qkrwh/3rdparty/install/Pangolin/lib/cmake/Pangolin")
 find_package(Pangolin REQUIRED)
 
 if(Pangolin_FOUND)
@@ -45,7 +45,7 @@ if(Pangolin_FOUND)
 endif()
 
 # OpenCV
-set(OpenCV_DIR "../../install/opencv/")
+set(OpenCV_DIR "c:/Users/qkrwh/3rdparty/install/opencv")
 find_package(OpenCV REQUIRED)
 if(OpenCV_FOUND)
     message(STATUS "OpenCV_DIR : ${OpenCV_DIR}")

@@ -7,7 +7,7 @@ project(imageBasics)
 
 
 # OpenCV
-set(OpenCV_DIR "../../install/opencv/")
+set(OpenCV_DIR "c:/Users/qkrwh/3rdparty/install/opencv")
 find_package(OpenCV REQUIRED)
 if(OpenCV_FOUND)
     message(STATUS "OpenCV_DIR : ${OpenCV_DIR}")
