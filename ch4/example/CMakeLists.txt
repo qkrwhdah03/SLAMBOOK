@@ -15,14 +15,14 @@ endif()
 add_executable(trajectoryError trajectoryError.cpp)
 
 # Eigen
-target_include_directories(trajectoryError PRIVATE "../../install/eigen3/include")
+target_include_directories(trajectoryError PRIVATE "c:/Users/qkrwh/3rdparty/install/eigen3/include")
 
 # Threads 
 find_package(Threads REQUIRED)
 target_link_libraries(trajectoryError PRIVATE Threads::Threads)
 
 # GLEW 
-set(GLEW_DIR "../../install/glew/lib/cmake/glew")
+set(GLEW_DIR "c:/Users/qkrwh/3rdparty/install/glew/lib/cmake/glew")
 find_package(GLEW REQUIRED)
 
 if(GLEW_FOUND)
@@ -35,7 +35,7 @@ target_include_directories(trajectoryError PRIVATE ${GLEW_INCLUDE_DIRS})
 target_link_libraries(trajectoryError PRIVATE ${GLEW_LIBRARIES})
 
 # Pangolin
-set(Pangolin_DIR "../../install/Pangolin/lib/cmake/Pangolin")
+set(Pangolin_DIR "c:/Users/qkrwh/3rdparty/install/Pangolin/lib/cmake/Pangolin")
 find_package(Pangolin REQUIRED)
 
 if(Pangolin_FOUND)
@@ -48,7 +48,7 @@ target_include_directories(trajectoryError PRIVATE ${Pangolin_INCLUDE_DIRS})
 target_link_libraries(trajectoryError PRIVATE ${Pangolin_LIBRARIES} ${FMT_LIBRARIES})
 
 # Sophus
-set(Sophus_DIR "../../install/Sophus/share/sophus/cmake")
+set(Sophus_DIR "c:/Users/qkrwh/3rdparty/install/Sophus/share/sophus/cmake")
 find_package(Sophus REQUIRED)
 
 if(Sophus_FOUND)

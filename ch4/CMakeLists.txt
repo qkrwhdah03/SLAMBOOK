@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(useSophus useSophus.cpp)
 
 # Sophus
-set(Sophus_DIR "../install/Sophus/share/sophus/cmake")
+set(Sophus_DIR "c:/Users/qkrwh/3rdparty/install/Sophus/share/sophus/cmake")
 find_package(Sophus REQUIRED)
 
 if(Sophus_FOUND)
@@ -22,7 +22,7 @@ target_link_libraries(useSophus PUBLIC Sophus::Sophus)
 target_include_directories(useSophus PRIVATE ${Sophus_INCLUDE_DIR})
 
 # Eigen
-target_include_directories(useSophus PRIVATE "../install/eigen3/include")
+target_include_directories(useSophus PRIVATE "c:/Users/qkrwh/3rdparty/install/eigen3/include")
 
 # Example
 add_subdirectory(example)

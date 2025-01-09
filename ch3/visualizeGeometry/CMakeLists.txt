@@ -7,14 +7,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable( visualizeGeometry visualizeGeometry.cpp )
 
 # Eigen
-target_include_directories(visualizeGeometry PUBLIC "../../install/eigen3/include/eigen3" )
+target_include_directories(visualizeGeometry PUBLIC "c:/Users/qkrwh/3rdparty/install/eigen3/include/eigen3" )
 
 # Threads 
 find_package(Threads REQUIRED)
 target_link_libraries(visualizeGeometry PUBLIC Threads::Threads)
 
 # GLEW 
-set(GLEW_DIR "../../install/glew/lib/cmake/glew")
+set(GLEW_DIR "c:/Users/qkrwh/3rdparty/install/glew/lib/cmake/glew")
 find_package(GLEW REQUIRED)
 
 if(GLEW_FOUND)
@@ -28,11 +28,11 @@ target_link_libraries(visualizeGeometry PUBLIC ${GLEW_LIBRARIES})
 
 
 # Pangolin
-set(Pangolin_DIR "../../install/Pangolin/lib/cmake/Pangolin")
+set(Pangolin_DIR "c:/Users/qkrwh/3rdparty/install/Pangolin/lib/cmake/Pangolin")
 find_package(Pangolin REQUIRED)
 
 if(Pangolin_FOUND)
-    set(Pangolin_INCLUDE_DIRS "../../install/Pangolin/include")
+    set(Pangolin_INCLUDE_DIRS "c:/Users/qkrwh/3rdparty/install/Pangolin/include")
     message(STATUS "Pangolin DIR : ${Pangolin_DIR}")
     message(STATUS "Pangolin INCLUDE DIR : ${Pangolin_INCLUDE_DIRS}")
     message(STATUS "Pangolin LIBRARIES : ${Pangolin_LIBRARIES}")
