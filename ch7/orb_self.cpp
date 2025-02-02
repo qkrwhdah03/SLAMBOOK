@@ -1,7 +1,3 @@
-//
-// Created by xiang on 18-11-25.
-//
-
 #include <opencv2/opencv.hpp>
 #include <string>
 #include <nmmintrin.h>
@@ -38,8 +34,8 @@ void BfMatch(const vector<DescType> &desc1, const vector<DescType> &desc2, vecto
 int main(int argc, char **argv) {
 
   // load image
-  cv::Mat first_image = cv::imread(first_file, 0);
-  cv::Mat second_image = cv::imread(second_file, 0);
+  cv::Mat first_image = cv::imread(first_file, cv::IMREAD_COLOR);
+  cv::Mat second_image = cv::imread(second_file, cv::IMREAD_COLOR);
   assert(first_image.data != nullptr && second_image.data != nullptr);
 
   // detect FAST keypoints1 using threshold=40
