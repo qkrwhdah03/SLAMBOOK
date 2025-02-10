@@ -1,7 +1,3 @@
-//
-// Created by Xiang on 2017/12/19.
-//
-
 #include <opencv2/opencv.hpp>
 #include <string>
 #include <chrono>
@@ -9,31 +5,27 @@
 #include <Eigen/Dense>
 
 using namespace std;
-using namespace cv;
-
-string file_1 = "./LK1.png";  // first image
-string file_2 = "./LK2.png";  // second image
 
 /// Optical flow tracker and interface
 class OpticalFlowTracker {
 public:
     OpticalFlowTracker(
-        const Mat &img1_,
-        const Mat &img2_,
-        const vector<KeyPoint> &kp1_,
-        vector<KeyPoint> &kp2_,
+        const cv::Mat &img1_,
+        const cv::Mat &img2_,
+        const vector<cv::KeyPoint> &kp1_,
+        vector<cv::KeyPoint> &kp2_,
         vector<bool> &success_,
         bool inverse_ = true, bool has_initial_ = false) :
         img1(img1_), img2(img2_), kp1(kp1_), kp2(kp2_), success(success_), inverse(inverse_),
         has_initial(has_initial_) {}
 
-    void calculateOpticalFlow(const Range &range);
+    void calculateOpticalFlow(const cv::Range &range);
 
 private:
-    const Mat &img1;
-    const Mat &img2;
-    const vector<KeyPoint> &kp1;
-    vector<KeyPoint> &kp2;
+    const cv::Mat &img1;
+    const cv::Mat &img2;
+    const vector<cv::KeyPoint> &kp1;
+    vector<cv::KeyPoint> &kp2;
     vector<bool> &success;
     bool inverse = true;
     bool has_initial = false;
@@ -49,10 +41,10 @@ private:
  * @param [in] inverse use inverse formulation?
  */
 void OpticalFlowSingleLevel(
-    const Mat &img1,
-    const Mat &img2,
-    const vector<KeyPoint> &kp1,
-    vector<KeyPoint> &kp2,
+    const cv::Mat &img1,
+    const cv::Mat &img2,
+    const vector<cv::KeyPoint> &kp1,
+    vector<cv::KeyPoint> &kp2,
     vector<bool> &success,
     bool inverse = false,
     bool has_initial_guess = false
@@ -69,10 +61,10 @@ void OpticalFlowSingleLevel(
  * @param [in] inverse set true to enable inverse formulation
  */
 void OpticalFlowMultiLevel(
-    const Mat &img1,
-    const Mat &img2,
-    const vector<KeyPoint> &kp1,
-    vector<KeyPoint> &kp2,
+    const cv::Mat &img1,
+    const cv::Mat &img2,
+    const vector<cv::KeyPoint> &kp1,
+    vector<cv::KeyPoint> &kp2,
     vector<bool> &success,
     bool inverse = false
 );
@@ -105,23 +97,25 @@ inline float GetPixelValue(const cv::Mat &img, float x, float y) {
 
 int main(int argc, char **argv) {
 
-    // images, note they are CV_8UC1, not CV_8UC3
-    Mat img1 = imread(file_1, 0);
-    Mat img2 = imread(file_2, 0);
+    string file_1 = "C:/Users/qkrwh/OneDrive/Desktop/VClab/visual-slam-2024-fall-indi2-code/revision/ch8/LK1.png";
+    string file_2 = "C:/Users/qkrwh/OneDrive/Desktop/VClab/visual-slam-2024-fall-indi2-code/revision/ch8/LK2.png";
+
+    cv::Mat img1 = cv::imread(file_1, cv::IMREAD_GRAYSCALE);
+    cv::Mat img2 = cv::imread(file_2, cv::IMREAD_GRAYSCALE);
 
     // key points, using GFTT here.
-    vector<KeyPoint> kp1;
-    Ptr<GFTTDetector> detector = GFTTDetector::create(500, 0.01, 20); // maximum 500 keypoints
+    vector<cv::KeyPoint> kp1;
+    cv::Ptr<cv::GFTTDetector> detector = cv::GFTTDetector::create(500, 0.01, 20); // maximum 500 keypoints
     detector->detect(img1, kp1);
 
     // now lets track these key points in the second image
     // first use single level LK in the validation picture
-    vector<KeyPoint> kp2_single;
+    vector<cv::KeyPoint> kp2_single;
     vector<bool> success_single;
     OpticalFlowSingleLevel(img1, img2, kp1, kp2_single, success_single);
 
     // then test multi-level LK
-    vector<KeyPoint> kp2_multi;
+    vector<cv::KeyPoint> kp2_multi;
     vector<bool> success_multi;
     chrono::steady_clock::time_point t1 = chrono::steady_clock::now();
     OpticalFlowMultiLevel(img1, img2, kp1, kp2_multi, success_multi, true);
@@ -130,7 +124,7 @@ int main(int argc, char **argv) {
     cout << "optical flow by gauss-newton: " << time_used.count() << endl;
 
     // use opencv's flow for validation
-    vector<Point2f> pt1, pt2;
+    vector<cv::Point2f> pt1, pt2;
     for (auto &kp: kp1) pt1.push_back(kp.pt);
     vector<uchar> status;
     vector<float> error;
@@ -141,8 +135,8 @@ int main(int argc, char **argv) {
     cout << "optical flow by opencv: " << time_used.count() << endl;
 
     // plot the differences of those functions
-    Mat img2_single;
-    cv::cvtColor(img2, img2_single, CV_GRAY2BGR);
+    cv::Mat img2_single;
+    cv::cvtColor(img2, img2_single, cv::COLOR_GRAY2BGR);
     for (int i = 0; i < kp2_single.size(); i++) {
         if (success_single[i]) {
             cv::circle(img2_single, kp2_single[i].pt, 2, cv::Scalar(0, 250, 0), 2);
@@ -150,8 +144,8 @@ int main(int argc, char **argv) {
         }
     }
 
-    Mat img2_multi;
-    cv::cvtColor(img2, img2_multi, CV_GRAY2BGR);
+    cv::Mat img2_multi;
+    cv::cvtColor(img2, img2_multi, cv::COLOR_GRAY2BGR);
     for (int i = 0; i < kp2_multi.size(); i++) {
         if (success_multi[i]) {
             cv::circle(img2_multi, kp2_multi[i].pt, 2, cv::Scalar(0, 250, 0), 2);
@@ -159,8 +153,8 @@ int main(int argc, char **argv) {
         }
     }
 
-    Mat img2_CV;
-    cv::cvtColor(img2, img2_CV, CV_GRAY2BGR);
+    cv::Mat img2_CV;
+    cv::cvtColor(img2, img2_CV, cv::COLOR_GRAY2BGR);
     for (int i = 0; i < pt2.size(); i++) {
         if (status[i]) {
             cv::circle(img2_CV, pt2[i], 2, cv::Scalar(0, 250, 0), 2);
@@ -177,20 +171,20 @@ int main(int argc, char **argv) {
 }
 
 void OpticalFlowSingleLevel(
-    const Mat &img1,
-    const Mat &img2,
-    const vector<KeyPoint> &kp1,
-    vector<KeyPoint> &kp2,
+    const cv::Mat &img1,
+    const cv::Mat &img2,
+    const vector<cv::KeyPoint> &kp1,
+    vector<cv::KeyPoint> &kp2,
     vector<bool> &success,
     bool inverse, bool has_initial) {
     kp2.resize(kp1.size());
     success.resize(kp1.size());
     OpticalFlowTracker tracker(img1, img2, kp1, kp2, success, inverse, has_initial);
-    parallel_for_(Range(0, kp1.size()),
+    parallel_for_(cv::Range(0, kp1.size()),
                   std::bind(&OpticalFlowTracker::calculateOpticalFlow, &tracker, placeholders::_1));
 }
 
-void OpticalFlowTracker::calculateOpticalFlow(const Range &range) {
+void OpticalFlowTracker::calculateOpticalFlow(const cv::Range &range) {
     // parameters
     int half_patch_size = 4;
     int iterations = 10;
@@ -280,15 +274,15 @@ void OpticalFlowTracker::calculateOpticalFlow(const Range &range) {
         success[i] = succ;
 
         // set kp2
-        kp2[i].pt = kp.pt + Point2f(dx, dy);
+        kp2[i].pt = kp.pt + cv::Point2f(dx, dy);
     }
 }
 
 void OpticalFlowMultiLevel(
-    const Mat &img1,
-    const Mat &img2,
-    const vector<KeyPoint> &kp1,
-    vector<KeyPoint> &kp2,
+    const cv::Mat &img1,
+    const cv::Mat &img2,
+    const vector<cv::KeyPoint> &kp1,
+    vector<cv::KeyPoint> &kp2,
     vector<bool> &success,
     bool inverse) {
 
@@ -299,13 +293,13 @@ void OpticalFlowMultiLevel(
 
     // create pyramids
     chrono::steady_clock::time_point t1 = chrono::steady_clock::now();
-    vector<Mat> pyr1, pyr2; // image pyramids
+    vector<cv::Mat> pyr1, pyr2; // image pyramids
     for (int i = 0; i < pyramids; i++) {
         if (i == 0) {
             pyr1.push_back(img1);
             pyr2.push_back(img2);
         } else {
-            Mat img1_pyr, img2_pyr;
+            cv::Mat img1_pyr, img2_pyr;
             cv::resize(pyr1[i - 1], img1_pyr,
                        cv::Size(pyr1[i - 1].cols * pyramid_scale, pyr1[i - 1].rows * pyramid_scale));
             cv::resize(pyr2[i - 1], img2_pyr,
@@ -319,7 +313,7 @@ void OpticalFlowMultiLevel(
     cout << "build pyramid time: " << time_used.count() << endl;
 
     // coarse-to-fine LK tracking in pyramids
-    vector<KeyPoint> kp1_pyr, kp2_pyr;
+    vector<cv::KeyPoint> kp1_pyr, kp2_pyr;
     for (auto &kp:kp1) {
         auto kp_top = kp;
         kp_top.pt *= scales[pyramids - 1];

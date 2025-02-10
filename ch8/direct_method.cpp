@@ -1,7 +1,6 @@
 #include <opencv2/opencv.hpp>
-#include <sophus/se3.hpp>
-#include <boost/format.hpp>
 #include <pangolin/pangolin.h>
+#include <sophus/se3.hpp>
 
 using namespace std;
 
@@ -12,9 +11,9 @@ double fx = 718.856, fy = 718.856, cx = 607.1928, cy = 185.2157;
 // baseline
 double baseline = 0.573;
 // paths
-string left_file = "./left.png";
-string disparity_file = "./disparity.png";
-boost::format fmt_others("./%06d.png");    // other files
+string left_file = "C:/Users/qkrwh/OneDrive/Desktop/VClab/visual-slam-2024-fall-indi2-code/revision/ch8/left.png";
+string disparity_file = "C:/Users/qkrwh/OneDrive/Desktop/VClab/visual-slam-2024-fall-indi2-code/revision/ch8/disparity.png";
+string base_path = "C:/Users/qkrwh/OneDrive/Desktop/VClab/visual-slam-2024-fall-indi2-code/revision/ch8/";
 
 // useful typedefs
 typedef Eigen::Matrix<double, 6, 6> Matrix6d;
@@ -122,8 +121,8 @@ inline float GetPixelValue(const cv::Mat &img, float x, float y) {
 
 int main(int argc, char **argv) {
 
-    cv::Mat left_img = cv::imread(left_file, 0);
-    cv::Mat disparity_img = cv::imread(disparity_file, 0);
+    cv::Mat left_img = cv::imread(left_file, cv::IMREAD_GRAYSCALE);
+    cv::Mat disparity_img = cv::imread(disparity_file, cv::IMREAD_GRAYSCALE);
 
     // let's randomly pick pixels in the first image and generate some 3d points in the first image's frame
     cv::RNG rng;
@@ -146,7 +145,7 @@ int main(int argc, char **argv) {
     Sophus::SE3d T_cur_ref;
 
     for (int i = 1; i < 6; i++) {  // 1~10
-        cv::Mat img = cv::imread((fmt_others % i).str(), 0);
+        cv::Mat img = cv::imread(base_path + "00000"+ to_string(i) + ".png", cv::IMREAD_GRAYSCALE);
         // try single layer by uncomment this line
         // DirectPoseEstimationSingleLayer(left_img, img, pixels_ref, depth_ref, T_cur_ref);
         DirectPoseEstimationMultiLayer(left_img, img, pixels_ref, depth_ref, T_cur_ref);
@@ -203,7 +202,7 @@ void DirectPoseEstimationSingleLayer(
 
     // plot the projected pixels here
     cv::Mat img2_show;
-    cv::cvtColor(img2, img2_show, CV_GRAY2BGR);
+    cv::cvtColor(img2, img2_show, cv::COLOR_GRAY2BGR);
     VecVector2d projection = jaco_accu.projected_points();
     for (size_t i = 0; i < px_ref.size(); ++i) {
         auto p_ref = px_ref[i];
